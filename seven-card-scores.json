@@ -1,0 +1,15 @@
+{
+  "high_card": 1765,
+  "one_pair": 4397,
+  "two_pair": 2323,
+  "three_of_a_kind": 455,
+  "straight": 474,
+  "flush": 300,
+  "full_house": 271,
+  "four_of_a_kind": 15,
+  "straight_flush": 0,
+  "above_one_pair": {
+    "count": 3838,
+    "percent": 38.379999999999995
+  }
+}

@@ -1,0 +1,108 @@
+name: Pipeline
+
+permissions:
+  id-token: write
+  contents: write
+  actions: write
+  pull-requests: write
+  deployments: read
+  checks: write
+
+on:
+  push:
+  workflow_dispatch:
+
+
+jobs:
+  quality-check:
+    name: Run Tests, Formatting, and Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chekcout main repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          
+
+      - name: Run format
+        run: |
+          npm run format
+
+      - name: Run linter
+        run: |
+          npm run lint
+
+      - name: Run TypeScript compile
+        run: |
+          npm run build
+
+      - name: Run Tests
+        run: |
+          npm run test
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5.0.0
+        with:
+          commit_message: Auto-format changes and new build output
+    
+  deploy:
+    name: Package and Deploy
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      TWINE_USERNAME: __token__
+      TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+    needs: quality-check
+    if: |
+      !failure() &&
+      github.event_name == 'workflow_dispatch' &&
+      github.ref_name == 'main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      
+      - name: Install twine
+        run: |
+          pip install packaging --user
+          pip install twine --user
+
+      - name: Install dependencies
+        run: |
+          npm ci
+
+      - name: Run TypeScript compile
+        run: |
+          npm run build
+
+      - name: JSII Package
+        run: |
+          npm run package
+
+      - name: JSII Deploy Python
+        run: |
+          npm run deploy:pypi
+
+      - run: cat /home/runner/work/_temp/.npmrc
+      
+      - name: JSII Deploy NPM
+        run: |
+          npm run deploy:npm

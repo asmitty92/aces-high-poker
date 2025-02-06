@@ -1,0 +1,65 @@
+{
+  "name": "aces-high-poker",
+  "version": "1.0.0",
+  "description": "Base framework for card and deck functionality",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
+  "files": [
+    "package.json",
+    "README.md",
+    "lib/**/*"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "jsii",
+    "build:watch": "jsii --watch",
+    "format": "prettier . -w && prettier . -c",
+    "lint": "eslint --fix . && eslint .",
+    "package": "jsii-pacmak",
+    "deploy:pypi": "publib-pypi",
+    "deploy:npm": "publib-npm",
+    "deploy:all": "publib-pypi && publib-npm",
+    "testbed": "npx ts-node testbed.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rubyclimber/aces-high-core.git"
+  },
+  "author": "Aaron Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rubyclimber/aces-high-core/issues"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.10",
+    "eslint": "^9.19.0",
+    "eslint-config-prettier": "^10.0.1",
+    "jest": "^29.7.0",
+    "jsii": "^5.7.4",
+    "jsii-pacmak": "^1.106.0",
+    "prettier-eslint": "^16.3.0",
+    "publib": "^0.2.938",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.22.0"
+  },
+  "stability": "stable",
+  "jsii": {
+    "versionFormat": "full",
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal",
+    "outdir": "dist",
+    "targets": {
+      "python": {
+        "distName": "aces-high-core",
+        "module": "aces_high_core"
+      }
+    }
+  },
+  "dependencies": {
+    "aces-high-core": "^2.3.0"
+  }
+}
