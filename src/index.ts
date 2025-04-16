@@ -12,7 +12,7 @@ export enum PokerHands {
   STRAIGHT_FLUSH,
 }
 
-export const faceValues = new Map<string, number>([
+export const faceValues: Record<string, number> = Object.fromEntries([
   [Faces.ACE, 1],
   [Faces.TWO, 2],
   [Faces.THREE, 3],
@@ -101,7 +101,7 @@ export class PokerHand extends CardHand {
 
     let score: PokerHands;
     let kicker: Card;
-    switch (valuesMap.size) {
+    switch (Object.keys(valuesMap).length) {
       case 5:
         score = this.scoreNoSetsHand(cards);
         kicker = this.findKicker([...cards], score);
@@ -156,17 +156,16 @@ export class PokerHand extends CardHand {
     return sortedCards[sortedCards.length - 1];
   }
 
-  protected buildValuesMap(cards: Card[]): Map<string, number> {
-    const map = new Map<string, number>();
+  protected buildValuesMap(cards: Card[]): Record<string, number> {
+    const map: Record<string, number> = {};
     cards.forEach((card) => {
-      const value = map.has(card.face) ? map.get(card.face) + 1 : 1;
-      map.set(card.face, value);
+      map[card.face] = card.face in map ? map[card.face] + 1 : 1;
     });
     return map;
   }
 
-  protected findNonPairFaces(valuesMap: Map<string, number>): string[] {
-    return Array.from(valuesMap.entries())
+  protected findNonPairFaces(valuesMap: Record<string, number>): string[] {
+    return Array.from(Object.entries(valuesMap))
       .filter(([_, value]) => value === 1)
       .map(([key, _]) => key);
   }
@@ -181,11 +180,7 @@ export class PokerHand extends CardHand {
       return true;
     }
 
-    if (containsKing && containsAce && maxValue - cards.at(1).value == 3) {
-      return true;
-    }
-
-    return false;
+    return containsKing && containsAce && maxValue - cards.at(1).value == 3;
   }
 
   protected isFlush(cards: Card[]): boolean {
@@ -193,20 +188,20 @@ export class PokerHand extends CardHand {
     return suits.size === 1;
   }
 
-  protected findFullHouseTopAndBottom(valuesMap: Map<string, number>): number[] {
+  protected findFullHouseTopAndBottom(valuesMap: Record<string, number>): number[] {
     let top: number = 0;
     let bottom: number = 0;
-    for (const [key, value] of valuesMap.entries()) {
+    for (const [key, value] of Object.entries(valuesMap)) {
       if (value === 3) {
-        top = faceValues.get(key);
+        top = faceValues[key];
       } else if (value === 2) {
-        bottom = faceValues.get(key);
+        bottom = faceValues[key];
       }
     }
     return [top, bottom];
   }
 
-  protected containsThree(valuesMap: Map<string, number>): boolean {
-    return Array.from(valuesMap.values()).some((v) => v === 3);
+  protected containsThree(valuesMap: Record<string, number>): boolean {
+    return Array.from(Object.values(valuesMap)).some((v) => v === 3);
   }
 }

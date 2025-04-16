@@ -8,12 +8,12 @@ export default tseslint.config({
   ignores: ["**/lib/**/*"],
   extends: [eslint.configs.recommended, ...tseslint.configs.recommended, prettier],
   rules: {
-    '@typescript-eslint/no-unused-vars': [
-      'error',
+    "@typescript-eslint/no-unused-vars": [
+      "error",
       {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
       },
-    ]
-  }
+    ],
+  },
 });

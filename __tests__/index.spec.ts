@@ -3,19 +3,19 @@ import { faceValues, getCombinations, PokerHand, PokerHands } from "../src";
 
 describe("faceValues map", () => {
   it("should contain all values", async () => {
-    expect(faceValues.get(Faces.ACE)).toEqual(1);
-    expect(faceValues.get(Faces.TWO)).toEqual(2);
-    expect(faceValues.get(Faces.THREE)).toEqual(3);
-    expect(faceValues.get(Faces.FOUR)).toEqual(4);
-    expect(faceValues.get(Faces.FIVE)).toEqual(5);
-    expect(faceValues.get(Faces.SIX)).toEqual(6);
-    expect(faceValues.get(Faces.SEVEN)).toEqual(7);
-    expect(faceValues.get(Faces.EIGHT)).toEqual(8);
-    expect(faceValues.get(Faces.NINE)).toEqual(9);
-    expect(faceValues.get(Faces.TEN)).toEqual(10);
-    expect(faceValues.get(Faces.JACK)).toEqual(11);
-    expect(faceValues.get(Faces.QUEEN)).toEqual(12);
-    expect(faceValues.get(Faces.KING)).toEqual(13);
+    expect(faceValues[Faces.ACE]).toEqual(1);
+    expect(faceValues[Faces.TWO]).toEqual(2);
+    expect(faceValues[Faces.THREE]).toEqual(3);
+    expect(faceValues[Faces.FOUR]).toEqual(4);
+    expect(faceValues[Faces.FIVE]).toEqual(5);
+    expect(faceValues[Faces.SIX]).toEqual(6);
+    expect(faceValues[Faces.SEVEN]).toEqual(7);
+    expect(faceValues[Faces.EIGHT]).toEqual(8);
+    expect(faceValues[Faces.NINE]).toEqual(9);
+    expect(faceValues[Faces.TEN]).toEqual(10);
+    expect(faceValues[Faces.JACK]).toEqual(11);
+    expect(faceValues[Faces.QUEEN]).toEqual(12);
+    expect(faceValues[Faces.KING]).toEqual(13);
   });
 });
 

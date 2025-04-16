@@ -45,7 +45,8 @@
     "publib": "^0.2.938",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.22.0"
+    "typescript-eslint": "^8.22.0",
+    "aces-high-core": "2.3.5"
   },
   "stability": "stable",
   "jsii": {
@@ -53,14 +54,12 @@
     "tsconfig": "tsconfig.json",
     "validateTsconfig": "minimal",
     "outdir": "dist",
-    "targets": {
-      "python": {
-        "distName": "aces-high-core",
-        "module": "aces_high_core"
-      }
-    }
+    "targets": {}
+  },
+  "peerDependencies": {
+    "aces-high-core": "^2.3.5"
   },
   "dependencies": {
-    "aces-high-core": "^2.3.0"
+    "aces-high-core": "^2.3.5"
   }
 }
