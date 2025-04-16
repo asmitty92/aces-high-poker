@@ -42,12 +42,9 @@ export function getCombinations<T>(items: T[], itemCount: number): T[][] {
   function generateCombinations(count: number, start: number, combo: ArrayItem<T>[]) {
     count--;
     for (let i = start; i < items.length; i++) {
-      combo[count] = new ArrayItem(items[i])
+      combo[count] = new ArrayItem(items[i]);
       if (count == 0) {
-        combinations.push(
-            combo
-                .map(i => i.value)
-        );
+        combinations.push(combo.map((i) => i.value));
       } else {
         start++;
         generateCombinations(count, start, combo);
@@ -83,71 +80,75 @@ export class PokerHand extends CardHand {
   }
 
   calculateScore(): number {
-    if (this.cards.length === 5) {
-      return this.scoreFiveCardHand(this.cards);
-    } else if(this.cards.length === 7) {
-      const combos = getCombinations(this.cards, 5);
-      let score = 0;
-      for (const cards of combos) {
-        const newScore = this.scoreFiveCardHand(cards);
-        if (newScore >= score) {
-          score = newScore;
-        }
+    return this.cards.length === 5 ? this.scoreFiveCardHand(this.cards) : this.scoreSevenCardHand(this.cards);
+  }
+
+  protected scoreSevenCardHand(cards: Card[]) {
+    const combos = getCombinations(cards, 5);
+    let score = 0;
+    for (const comboCards of combos) {
+      comboCards.sort((c1: Card, c2: Card) => c1.value - c2.value);
+      const newScore = this.scoreFiveCardHand(comboCards);
+      if (newScore >= score) {
+        score = newScore;
       }
-      return score;
     }
+    return score;
   }
 
   protected scoreFiveCardHand(cards: Card[]): number {
     const valuesMap = this.buildValuesMap(cards);
 
     let score: PokerHands;
+    let kicker: Card;
     switch (valuesMap.size) {
       case 5:
-        const sortedCards = cards.sort((c1, c2) => c1.value - c2.value);
-        const isStraight = this.isStraight(sortedCards);
-        const isFlush = this.isFlush(sortedCards);
-        if (isStraight && isFlush) score = PokerHands.STRAIGHT_FLUSH;
-        else if (isStraight) score = PokerHands.STRAIGHT;
-        else if (isFlush) score = PokerHands.FLUSH;
-        else score = PokerHands.HIGH_CARD;
-        this.myKicker = this.findKicker([...cards], score);
+        score = this.scoreNoSetsHand(cards);
+        kicker = this.findKicker([...cards], score);
+        this.myKicker = kicker;
         return score;
       case 4:
         score = PokerHands.ONE_PAIR;
         break;
       case 3:
-        const containsThree = Array.from(valuesMap.values()).some(
-          (v) => v === 3,
-        );
-        score = containsThree
-          ? PokerHands.THREE_OF_A_KIND
-          : PokerHands.TWO_PAIR;
+        const containsThree = Array.from(valuesMap.values()).some((v) => v === 3);
+        score = containsThree ? PokerHands.THREE_OF_A_KIND : PokerHands.TWO_PAIR;
         break;
       case 2:
-        [this._fullHouseTop, this._fullHouseBottom] =
-          this.findFullHouseTopAndBottom(valuesMap);
-        score =
-          this.fullHouseTop > 0
-            ? PokerHands.FULL_HOUSE
-            : PokerHands.FOUR_OF_A_KIND;
+        [this._fullHouseTop, this._fullHouseBottom] = this.findFullHouseTopAndBottom(valuesMap);
+        score = this.fullHouseTop > 0 ? PokerHands.FULL_HOUSE : PokerHands.FOUR_OF_A_KIND;
         break;
     }
 
     const nonPairFaces = this.findNonPairFaces(valuesMap);
-    const nonPairCards = cards.filter((c) =>
-      nonPairFaces.some((f) => c.face === f),
-    );
-    this.myKicker = this.findKicker(nonPairCards, score);
+    const nonPairCards = cards.filter((c) => nonPairFaces.some((f) => c.face === f));
+    kicker = this.findKicker(nonPairCards, score);
 
+    this.myKicker = kicker;
     return score;
+  }
+
+  protected scoreNoSetsHand(cards: Card[]): PokerHands {
+    const sortedCards = cards.sort((c1, c2) => c1.value - c2.value);
+    const isStraight = this.isStraight(sortedCards);
+    const isFlush = this.isFlush(sortedCards);
+
+    if (isStraight && isFlush) {
+      return PokerHands.STRAIGHT_FLUSH;
+    }
+    if (isStraight) {
+      return PokerHands.STRAIGHT;
+    }
+    if (isFlush) {
+      return PokerHands.FLUSH;
+    }
+    return PokerHands.HIGH_CARD;
   }
 
   protected findKicker(cards: Card[], score: PokerHands): Card {
     const aceIndex = cards.findIndex((c) => c.face === Faces.ACE);
     const containsKing = cards.some((c) => c.face === Faces.KING);
-    const isAceLowStraight =
-      score === PokerHands.STRAIGHT && aceIndex >= 0 && !containsKing;
+    const isAceLowStraight = score === PokerHands.STRAIGHT && aceIndex >= 0 && !containsKing;
     if (aceIndex >= 0 && !isAceLowStraight) {
       return cards[aceIndex];
     }
@@ -172,22 +173,20 @@ export class PokerHand extends CardHand {
   }
 
   protected isStraight(cards: Card[]): boolean {
-    const maxValue = Math.max(...cards.map((card) => card.value));
-    const minValue = Math.min(...cards.map((card) => card.value));
+    const maxValue = cards.at(-1).value;
+    const minValue = cards.at(0).value;
     const containsKing = cards.some((c) => c.face === Faces.KING);
     const containsAce = cards.some((c) => c.face === Faces.ACE);
 
-    if (maxValue - minValue !== 4 && !(containsKing && containsAce)) {
-      return false;
+    if (!(containsKing && containsAce) && maxValue - minValue == 4) {
+      return true;
     }
 
-    const startIndex = containsAce ? 2 : 1;
-    for (let i = startIndex; i < cards.length; i++) {
-      if (cards[i].value - cards[i - 1].value !== 1) {
-        return false;
-      }
+    if (containsKing && containsAce && maxValue - cards.at(1).value == 3) {
+      return true;
     }
-    return true;
+
+    return false;
   }
 
   protected isFlush(cards: Card[]): boolean {
@@ -195,9 +194,7 @@ export class PokerHand extends CardHand {
     return suits.size === 1;
   }
 
-  protected findFullHouseTopAndBottom(
-    valuesMap: Map<string, number>,
-  ): number[] {
+  protected findFullHouseTopAndBottom(valuesMap: Map<string, number>): number[] {
     let top: number = 0;
     let bottom: number = 0;
     for (const [key, value] of valuesMap.entries()) {

@@ -1,5 +1,36 @@
-import {Card, Faces, Suits} from "aces-high-core";
-import {faceValues, PokerHand, PokerHands} from "../src";
+import { Card, Faces, Suits } from "aces-high-core";
+import { faceValues, getCombinations, PokerHand, PokerHands } from "../src";
+
+describe("faceValues map", () => {
+  it("should contain all values", async () => {
+    expect(faceValues.get(Faces.ACE)).toEqual(1);
+    expect(faceValues.get(Faces.TWO)).toEqual(2);
+    expect(faceValues.get(Faces.THREE)).toEqual(3);
+    expect(faceValues.get(Faces.FOUR)).toEqual(4);
+    expect(faceValues.get(Faces.FIVE)).toEqual(5);
+    expect(faceValues.get(Faces.SIX)).toEqual(6);
+    expect(faceValues.get(Faces.SEVEN)).toEqual(7);
+    expect(faceValues.get(Faces.EIGHT)).toEqual(8);
+    expect(faceValues.get(Faces.NINE)).toEqual(9);
+    expect(faceValues.get(Faces.TEN)).toEqual(10);
+    expect(faceValues.get(Faces.JACK)).toEqual(11);
+    expect(faceValues.get(Faces.QUEEN)).toEqual(12);
+    expect(faceValues.get(Faces.KING)).toEqual(13);
+  });
+});
+
+describe("getCombinations function", () => {
+  it("should find all combinations in a list", async () => {
+    const combinations = getCombinations([1, 2, 3], 2);
+
+    expect(combinations.length).toEqual(3);
+    expect(combinations).toEqual([
+      [2, 1],
+      [3, 1],
+      [3, 2],
+    ]);
+  });
+});
 
 describe("PokerHand", () => {
   describe("calculateScore", () => {
@@ -87,12 +118,7 @@ describe("PokerHand", () => {
       });
 
       it("should find the kicker card when hand contains pair of aces", async () => {
-        cards.splice(
-          1,
-          2,
-          new Card(Suits.CLUBS, Faces.ACE),
-          new Card(Suits.DIAMONDS, Faces.ACE),
-        );
+        cards.splice(1, 2, new Card(Suits.CLUBS, Faces.ACE), new Card(Suits.DIAMONDS, Faces.ACE));
         const hand = new PokerHand(cards);
 
         hand.calculateScore();
@@ -101,12 +127,7 @@ describe("PokerHand", () => {
       });
 
       it("should find the kicker card when pair is highest value", async () => {
-        cards.splice(
-          1,
-          2,
-          new Card(Suits.CLUBS, Faces.KING),
-          new Card(Suits.SPADES, Faces.KING),
-        );
+        cards.splice(1, 2, new Card(Suits.CLUBS, Faces.KING), new Card(Suits.SPADES, Faces.KING));
         const hand = new PokerHand(cards);
 
         hand.calculateScore();
@@ -262,6 +283,21 @@ describe("PokerHand", () => {
         expect(score).toBe(PokerHands.STRAIGHT);
       });
 
+      it("should fail to find a straight when hand contains king and ace but not straight", async () => {
+        cards = [
+          new Card(Suits.DIAMONDS, Faces.JACK),
+          new Card(Suits.CLUBS, Faces.QUEEN),
+          new Card(Suits.CLUBS, Faces.NINE),
+          new Card(Suits.SPADES, Faces.ACE),
+          new Card(Suits.DIAMONDS, Faces.KING),
+        ];
+        const hand = new PokerHand(cards);
+
+        const score = hand.calculateScore();
+
+        expect(score).not.toBe(PokerHands.STRAIGHT);
+      });
+
       it("should find the correct kicker card when hand contains no ace", async () => {
         const hand = new PokerHand(cards);
 
@@ -376,7 +412,7 @@ describe("PokerHand", () => {
 
         hand.calculateScore();
 
-        expect(hand.fullHouseTop).toBe(faceValues.get(Faces.NINE));
+        expect(hand.fullHouseTop).toBe(9);
       });
 
       it("should find the correct bottom", async () => {
@@ -384,7 +420,7 @@ describe("PokerHand", () => {
 
         hand.calculateScore();
 
-        expect(hand.fullHouseBottom).toBe(faceValues.get(Faces.ACE));
+        expect(hand.fullHouseBottom).toBe(1);
       });
     });
 
@@ -421,11 +457,11 @@ describe("PokerHand", () => {
       let cards: Card[];
       beforeEach(async () => {
         cards = [
-            new Card(Suits.DIAMONDS, Faces.NINE),
-            new Card(Suits.DIAMONDS, Faces.JACK),
-            new Card(Suits.DIAMONDS, Faces.KING),
-            new Card(Suits.DIAMONDS, Faces.QUEEN),
-            new Card(Suits.DIAMONDS, Faces.TEN),
+          new Card(Suits.DIAMONDS, Faces.NINE),
+          new Card(Suits.DIAMONDS, Faces.JACK),
+          new Card(Suits.DIAMONDS, Faces.KING),
+          new Card(Suits.DIAMONDS, Faces.QUEEN),
+          new Card(Suits.DIAMONDS, Faces.TEN),
         ];
       });
 
@@ -453,7 +489,32 @@ describe("PokerHand", () => {
 
         expect(score).toBe(PokerHands.STRAIGHT_FLUSH);
         expect(hand.kicker.face).toBe(Faces.ACE);
-      })
+      });
+    });
+
+    describe("Testing 7 Card hand", () => {
+      let cards: Card[];
+
+      beforeEach(async () => {
+        cards = [];
+      });
+
+      it("should correctly identify a STRAIGHT_FLUSH hand", async () => {
+        cards = [
+          new Card(Suits.DIAMONDS, Faces.NINE),
+          new Card(Suits.DIAMONDS, Faces.JACK),
+          new Card(Suits.DIAMONDS, Faces.KING),
+          new Card(Suits.DIAMONDS, Faces.QUEEN),
+          new Card(Suits.DIAMONDS, Faces.TEN),
+          new Card(Suits.SPADES, Faces.NINE),
+          new Card(Suits.HEARTS, Faces.QUEEN),
+        ];
+        const hand = new PokerHand(cards);
+
+        const score = hand.calculateScore();
+
+        expect(score).toBe(PokerHands.STRAIGHT_FLUSH);
+      });
     });
   });
 });
