@@ -37,7 +37,7 @@ class ArrayItem<T> {
 }
 
 export function getCombinations<T>(items: T[], itemCount: number): T[][] {
-  let combinations = [];
+  const combinations = [];
 
   function generateCombinations(count: number, start: number, combo: ArrayItem<T>[]) {
     count--;
@@ -111,8 +111,7 @@ export class PokerHand extends CardHand {
         score = PokerHands.ONE_PAIR;
         break;
       case 3:
-        const containsThree = Array.from(valuesMap.values()).some((v) => v === 3);
-        score = containsThree ? PokerHands.THREE_OF_A_KIND : PokerHands.TWO_PAIR;
+        score = this.containsThree(valuesMap) ? PokerHands.THREE_OF_A_KIND : PokerHands.TWO_PAIR;
         break;
       case 2:
         [this._fullHouseTop, this._fullHouseBottom] = this.findFullHouseTopAndBottom(valuesMap);
@@ -205,5 +204,9 @@ export class PokerHand extends CardHand {
       }
     }
     return [top, bottom];
+  }
+
+  protected containsThree(valuesMap: Map<string, number>): boolean {
+    return Array.from(valuesMap.values()).some((v) => v === 3);
   }
 }
