@@ -1,5 +1,5 @@
 import { Card, Faces, Suits } from "aces-high-core";
-import { faceValues, getCombinations, PokerHand, PokerHands } from "../src";
+import { faceValues, PokerHand, PokerHands } from "../src";
 
 describe("faceValues map", () => {
   it("should contain all values", async () => {
@@ -16,19 +16,6 @@ describe("faceValues map", () => {
     expect(faceValues[Faces.JACK]).toEqual(11);
     expect(faceValues[Faces.QUEEN]).toEqual(12);
     expect(faceValues[Faces.KING]).toEqual(13);
-  });
-});
-
-describe("getCombinations function", () => {
-  it("should find all combinations in a list", async () => {
-    const combinations = getCombinations([1, 2, 3], 2);
-
-    expect(combinations.length).toEqual(3);
-    expect(combinations).toEqual([
-      [2, 1],
-      [3, 1],
-      [3, 2],
-    ]);
   });
 });
 

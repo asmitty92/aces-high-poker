@@ -1,8 +1,15 @@
-module.exports = {
-  roots: ["<rootDir>"],
-  testMatch: ["**/__tests__/**/*.+(ts|tsx|js)", "**/?(*.)+(spec|test).+(ts|tsx|js)"],
-  transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
+// jest.config.js
+export default {
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  testEnvironment: "node",
+  transform: {
+    "^.+\\.[tj]s$": ["ts-jest", { useESM: true }],
+  },
+  extensionsToTreatAsEsm: ['.ts'],
+  transformIgnorePatterns: [
+    "node_modules/(?!aces-high-core)"  // <-- tell Jest to transform aces-high-core
+  ]
 };

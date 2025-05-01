@@ -1,4 +1,4 @@
-import { Card, CardHand, Faces } from "aces-high-core";
+import { Card, CardHand, Faces, getCombinations } from "aces-high-core";
 
 export enum PokerHands {
   HIGH_CARD = 1,
@@ -27,35 +27,6 @@ export const faceValues: Record<string, number> = Object.fromEntries([
   [Faces.QUEEN, 12],
   [Faces.KING, 13],
 ]);
-
-class ArrayItem<T> {
-  value: T;
-
-  constructor(value: T) {
-    this.value = value;
-  }
-}
-
-export function getCombinations<T>(items: T[], itemCount: number): T[][] {
-  const combinations = [];
-
-  function generateCombinations(count: number, start: number, combo: ArrayItem<T>[]) {
-    count--;
-    for (let i = start; i < items.length; i++) {
-      combo[count] = new ArrayItem(items[i]);
-      if (count == 0) {
-        combinations.push(combo.map((i) => i.value));
-      } else {
-        start++;
-        generateCombinations(count, start, combo);
-      }
-    }
-  }
-
-  generateCombinations(itemCount, 0, []);
-
-  return combinations;
-}
 
 export class PokerHand extends CardHand {
   private myKicker: Card;

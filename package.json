@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Base framework for card and deck functionality",
   "main": "lib/index.js",
+  "type": "module",
   "typings": "lib/index.d.ts",
   "types": "lib/index.d.ts",
   "files": [
@@ -11,16 +12,12 @@
     "lib/**/*"
   ],
   "scripts": {
-    "test": "jest --coverage",
-    "build": "jsii",
-    "build:watch": "jsii --watch",
+    "build": "tsc",
     "format": "prettier . -w && prettier . -c",
     "lint": "eslint --fix . && eslint .",
-    "package": "jsii-pacmak",
-    "deploy:pypi": "publib-pypi",
-    "deploy:npm": "publib-npm",
-    "deploy:all": "publib-pypi && publib-npm",
-    "testbed": "npx ts-node testbed.ts"
+    "test": "jest --coverage --no-cache",
+    "testbed": "ts-node testbed.ts",
+    "deploy:npm": "npm publish --access public"
   },
   "repository": {
     "type": "git",
@@ -45,21 +42,10 @@
     "publib": "^0.2.938",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.22.0",
-    "aces-high-core": "2.3.5"
+    "typescript-eslint": "^8.22.0"
   },
   "stability": "stable",
-  "jsii": {
-    "versionFormat": "full",
-    "tsconfig": "tsconfig.json",
-    "validateTsconfig": "minimal",
-    "outdir": "dist",
-    "targets": {}
-  },
-  "peerDependencies": {
-    "aces-high-core": "^2.3.5"
-  },
   "dependencies": {
-    "aces-high-core": "^2.3.5"
+    "aces-high-core": "^3.0.1"
   }
 }
