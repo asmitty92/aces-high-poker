@@ -5,13 +5,16 @@ Aces High Poker is a TypeScript-based game engine designed to simulate various t
 ## Features
 
 - **Hand Evaluation**:
+
   - Detects hand rankings such as Royal Flush, Straight Flush, Four of a Kind, etc.
   - Supports tie-breaking logic for determining winners.
 
 - **Game Variants**:
+
   - Designed to be extendable for multiple Poker variants (e.g., Texas Hold'em, Omaha, Seven-Card Stud).
 
 - **Player Management**:
+
   - Utilities for managing player actions, bets, and chip stacks.
 
 - **TypeScript Support**:
@@ -36,7 +39,7 @@ yarn add aces-high-poker
 Here’s a quick example of how to use Aces High Poker to evaluate a Poker hand:
 
 ```typescript
-import { PokerHand, Card, Suits, Faces } from 'aces-high-poker';
+import { PokerHand, Card, Suits, Faces } from "aces-high-poker";
 
 // Create a Poker hand
 const hand = new PokerHand([
@@ -49,7 +52,7 @@ const hand = new PokerHand([
 
 // Evaluate the hand
 const ranking = hand.getRanking();
-console.log('Hand ranking:', ranking); // Output: Royal Flush
+console.log("Hand ranking:", ranking); // Output: Royal Flush
 ```
 
 ## Development

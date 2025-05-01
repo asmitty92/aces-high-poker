@@ -11,7 +11,6 @@ export declare enum PokerHands {
     STRAIGHT_FLUSH = 9
 }
 export declare const faceValues: Record<string, number>;
-export declare function getCombinations<T>(items: T[], itemCount: number): T[][];
 export declare class PokerHand extends CardHand {
     private myKicker;
     private _fullHouseTop;
