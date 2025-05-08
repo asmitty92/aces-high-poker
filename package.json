@@ -46,6 +46,6 @@
   },
   "stability": "stable",
   "dependencies": {
-    "aces-high-core": "^3.0.1"
+    "aces-high-core": "^4.2.1"
   }
 }

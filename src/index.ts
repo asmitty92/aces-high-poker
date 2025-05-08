@@ -1,4 +1,4 @@
-import { Card, CardHand, Faces, getCombinations } from "aces-high-core";
+import { Card, CardHand, Faces, Face, getCombinations } from "aces-high-core";
 
 export enum PokerHands {
   HIGH_CARD = 1,
@@ -28,12 +28,14 @@ export const faceValues: Record<string, number> = Object.fromEntries([
   [Faces.KING, 13],
 ]);
 
-export class PokerHand extends CardHand {
-  private myKicker: Card;
+export type PokerCard = Card<Face>;
+
+export class PokerHand extends CardHand<Face> {
+  private myKicker: PokerCard;
   private _fullHouseTop: number;
   private _fullHouseBottom: number;
 
-  get kicker(): Card {
+  get kicker(): PokerCard {
     return this.myKicker;
   }
 
@@ -45,20 +47,20 @@ export class PokerHand extends CardHand {
     return this._fullHouseBottom;
   }
 
-  constructor(cards: Card[]) {
-    super(cards);
-    this.cards.sort((c1: Card, c2: Card) => c1.value - c2.value);
+  constructor(cards: PokerCard[], accessKey: symbol) {
+    super(cards, accessKey);
+    this._cards.sort((c1: PokerCard, c2: PokerCard) => c1.value - c2.value);
   }
 
   calculateScore(): number {
-    return this.cards.length === 5 ? this.scoreFiveCardHand(this.cards) : this.scoreSevenCardHand(this.cards);
+    return this.cards.length === 5 ? this.scoreFiveCardHand(this._cards) : this.scoreSevenCardHand(this._cards);
   }
 
-  protected scoreSevenCardHand(cards: Card[]) {
+  protected scoreSevenCardHand(cards: PokerCard[]) {
     const combos = getCombinations(cards, 5);
     let score = 0;
     for (const comboCards of combos) {
-      comboCards.sort((c1: Card, c2: Card) => c1.value - c2.value);
+      comboCards.sort((c1: PokerCard, c2: PokerCard) => c1.value - c2.value);
       const newScore = this.scoreFiveCardHand(comboCards);
       if (newScore >= score) {
         score = newScore;
@@ -67,11 +69,11 @@ export class PokerHand extends CardHand {
     return score;
   }
 
-  protected scoreFiveCardHand(cards: Card[]): number {
+  protected scoreFiveCardHand(cards: PokerCard[]): number {
     const valuesMap = this.buildValuesMap(cards);
 
     let score: PokerHands;
-    let kicker: Card;
+    let kicker: PokerCard;
     switch (Object.keys(valuesMap).length) {
       case 5:
         score = this.scoreNoSetsHand(cards);
@@ -98,7 +100,7 @@ export class PokerHand extends CardHand {
     return score;
   }
 
-  protected scoreNoSetsHand(cards: Card[]): PokerHands {
+  protected scoreNoSetsHand(cards: PokerCard[]): PokerHands {
     const sortedCards = cards.sort((c1, c2) => c1.value - c2.value);
     const isStraight = this.isStraight(sortedCards);
     const isFlush = this.isFlush(sortedCards);
@@ -115,7 +117,7 @@ export class PokerHand extends CardHand {
     return PokerHands.HIGH_CARD;
   }
 
-  protected findKicker(cards: Card[], score: PokerHands): Card {
+  protected findKicker(cards: PokerCard[], score: PokerHands): PokerCard {
     const aceIndex = cards.findIndex((c) => c.face === Faces.ACE);
     const containsKing = cards.some((c) => c.face === Faces.KING);
     const isAceLowStraight = score === PokerHands.STRAIGHT && aceIndex >= 0 && !containsKing;
@@ -123,11 +125,11 @@ export class PokerHand extends CardHand {
       return cards[aceIndex];
     }
 
-    const sortedCards = cards.sort((a: Card, b: Card) => a.value - b.value);
+    const sortedCards = cards.sort((a: PokerCard, b: PokerCard) => a.value - b.value);
     return sortedCards[sortedCards.length - 1];
   }
 
-  protected buildValuesMap(cards: Card[]): Record<string, number> {
+  protected buildValuesMap(cards: PokerCard[]): Record<string, number> {
     const map: Record<string, number> = {};
     cards.forEach((card) => {
       map[card.face] = card.face in map ? map[card.face] + 1 : 1;
@@ -141,7 +143,7 @@ export class PokerHand extends CardHand {
       .map(([key, _]) => key);
   }
 
-  protected isStraight(cards: Card[]): boolean {
+  protected isStraight(cards: PokerCard[]): boolean {
     const maxValue = cards.at(-1).value;
     const minValue = cards.at(0).value;
     const containsKing = cards.some((c) => c.face === Faces.KING);
@@ -154,7 +156,7 @@ export class PokerHand extends CardHand {
     return containsKing && containsAce && maxValue - cards.at(1).value == 3;
   }
 
-  protected isFlush(cards: Card[]): boolean {
+  protected isFlush(cards: PokerCard[]): boolean {
     const suits = new Set(cards.map((card) => card.suit));
     return suits.size === 1;
   }
